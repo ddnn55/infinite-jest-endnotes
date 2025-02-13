@@ -10,7 +10,6 @@
     <p>Contribute: <a href="https://github.com/ddnn55/infinite-jest-endnotes">github.com/ddnn55/infinite-jest-endnotes</a></p>
     <hr/>
     <script>
-
         fetch('infinite_jest_endnotes.txt')
             .then(response => response.text())
             .then(endNotesText => {
@@ -29,11 +28,43 @@
                     nextChar++;
                 }
 
+                // Create endnotes with anchors
                 for(let i = 0; i < endNotes.length; i++) {
                     const endNote = document.createElement('p');
-                    endNote.innerHTML = `${endNotes[i]}`;
+                    const spanAnchor = document.createElement('span');
+                    spanAnchor.id = `endnote-${i+1}`;
+                    spanAnchor.innerHTML = endNotes[i];
+                    endNote.appendChild(spanAnchor);
                     document.body.appendChild(endNote);
                 }
+
+                // Add fixed dropdown menu at the bottom of the viewport
+                const dropdown = document.createElement('select');
+                dropdown.style.position = 'fixed';
+                dropdown.style.bottom = '24px';
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translateX(-50%)';
+                dropdown.style.zIndex = '1000';
+                dropdown.style.fontSize = '24px';
+                const defaultOption = document.createElement('option');
+                defaultOption.textContent = 'Jump to...';
+                defaultOption.selected = true;
+                defaultOption.disabled = true;
+                dropdown.appendChild(defaultOption);
+                for(let i = 0; i < endNotes.length; i++) {
+                    const option = document.createElement('option');
+                    option.value = `endnote-${i+1}`;
+                    option.textContent = `${i+1}`;
+                    dropdown.appendChild(option);
+                }
+                dropdown.addEventListener('change', event => {
+                    const selected = event.target.value;
+                    const anchor = document.getElementById(selected);
+                    if(anchor) {
+                        anchor.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+                document.body.appendChild(dropdown);
             })
             .catch(error => console.error('Error loading the file:', error));
     </script>
