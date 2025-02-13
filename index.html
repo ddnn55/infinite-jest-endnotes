@@ -6,15 +6,34 @@
     <title>Infinite Jest Endnotes</title>
 </head>
 <body>
-    <h1>Welcome to My GitHub Pages Site</h1>
-    <p>This is a simple website hosted on GitHub Pages.</p>
+    <h1>Infinite Jest Endnotes</h1>
+    <p>Contribute: <a href="https://github.com/ddnn55/infinite-jest-endnotes">github.com/ddnn55/infinite-jest-endnotes</a></p>
+    <hr/>
     <script>
+
         fetch('infinite_jest_endnotes.txt')
             .then(response => response.text())
-            .then(data => {
-                const div = document.createElement('div');
-                div.textContent = data;
-                document.body.appendChild(div);
+            .then(endNotesText => {
+                const endNotes = [];
+                let nextEndnote = 2;
+                let currentEndnoteStart = 0;
+                let nextChar = 0;
+                let needle = `\n${nextEndnote}`;
+                while(nextChar < endNotesText.length) {
+                    if(endNotesText.substring(nextChar, nextChar + needle.length) === needle) {
+                        endNotes.push(`<sup>${nextEndnote - 1}</sup>` + endNotesText.substring(currentEndnoteStart + needle.length, nextChar));
+                        currentEndnoteStart = nextChar;
+                        nextEndnote++;
+                        needle = `\n${nextEndnote}`;
+                    }
+                    nextChar++;
+                }
+
+                for(let i = 0; i < endNotes.length; i++) {
+                    const endNote = document.createElement('p');
+                    endNote.innerHTML = `${endNotes[i]}`;
+                    document.body.appendChild(endNote);
+                }
             })
             .catch(error => console.error('Error loading the file:', error));
     </script>
